@@ -1,0 +1,57 @@
+---
+title: "stl_lead_inequity"
+author: "Marina Kochuten"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+# load packages ----
+library(tidyverse)
+library(janitor)
+
+# read in data ----
+stl_lead <- read_csv(here::here("data", "stl_blood_lead.csv"))
+
+# clean names ----
+stl_lead <- stl_lead |> clean_names()
+
+# explore the dataset ----
+skimr::skim(stl_lead)
+dim(stl_lead)
+names(stl_lead)
+```
+
+```{r}
+# create new data frame with extra column prop_white ----
+stl_lead_prop <- read.csv(here::here("data", "stl_blood_lead.csv")) |>
+  dplyr::mutate(prop_white = (white / totalPop)*100)
+```
+
+```{r}
+# create a plot ----
+stl_lead_plot <- ggplot(data = stl_lead_prop,
+       aes(x = prop_white, y = pctElevated)) +
+  geom_point(aes(color = pctElevated), show.legend = FALSE) +
+  scale_color_gradient(low = "yellow", high = "red") +
+  theme_minimal() 
+stl_lead_plot
+
+# save plot ----
+ggsave(here::here("figs", "stl_lead_plot.png"), height = 5, width = 6)
+```
+
+######## This figure shows that the percent of elevated lead blood tests decreases as the population is increasingly white. Populations with a lower proportion of people identifying as white have a higher percentage of elevated lead blood tests. 
+
+```{r}
+# create a histogram ----
+pct_elevated_histogram <- ggplot(data = stl_lead_prop,
+       aes(x = pctElevated)) +
+  geom_histogram(color = "forestgreen", fill = "limegreen")
+pct_elevated_histogram
+
+#save plot ----
+ggsave(here::here("figs", "pct_elevated_histogram.jpg"))
+```
+
